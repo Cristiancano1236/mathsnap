@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!--
+      Archivo: index.html
+      Propósito: Página principal de la app de resolución de problemas matemáticos.
+      Relación: enlaza con assets/css/styles.css y assets/js/app.js.
+      Tecnologías: Bootstrap 5.3+, Tesseract.js, Math.js, Mathsteps.
+    -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MathSnap Solver — Resolver problemas matemáticos con OCR</title>
+    <meta name="description" content="MathSnap Solver: toma una foto de tu problema matemático y obtén solución paso a paso con OCR, álgebra, sistemas y más.">
+    <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
+    <link rel="alternate icon" href="assets/img/logo.svg">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="robots" content="index,follow">
+    <meta name="keywords" content="resolver matemáticas, OCR matemático, paso a paso, álgebra, sistemas de ecuaciones, calculadora científica, MathJax">
+    <!-- Open Graph -->
+    <meta property="og:title" content="MathSnap Solver — Resolver problemas matemáticos con OCR">
+    <meta property="og:description" content="Toma una foto y resuelve paso a paso: ecuaciones, expresiones, sistemas y más.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/img/logo.svg">
+    <meta property="og:url" content="https://tu-dominio-ejemplo.com/">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="MathSnap Solver — Resolver problemas matemáticos con OCR">
+    <meta name="twitter:description" content="Resuelve paso a paso desde una foto o texto.">
+    <meta name="twitter:image" content="assets/img/logo.svg">
+    <!-- Bootstrap CSS (v5.3 via CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Hoja de estilos local -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+  </head>
+  <body class="app-bg">
+    <!-- Navbar principal -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="assets/img/logo.svg" alt="Logo MathSnap" class="brand-logo"> MathSnap Solver
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#ayudaModal" data-bs-toggle="modal">Ayuda</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="container mt-4">
+      <div class="hero d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+          <div class="badge rounded-pill">OCR + Solver</div>
+          <h1 class="h4 mt-2 mb-1">Resuelve matemáticas desde una foto o texto</h1>
+          <p class="mb-0">Ecuaciones, expresiones, sistemas y más. Paso a paso con LaTeX.</p>
+        </div>
+        <div>
+          <a href="#" class="btn btn-sm btn-light me-2" data-bs-toggle="modal" data-bs-target="#ayudaModal"><i class="bi bi-question-circle"></i> Ayuda</a>
+          <a href="#" class="btn btn-sm btn-gradient"><i class="bi bi-lightning-charge"></i> Empezar</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contenido principal -->
+    <main class="container my-4">
+      <div class="row g-4">
+        <!-- Panel de entrada -->
+        <div class="col-12 col-lg-5">
+          <div class="card shadow-sm">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <span class="fw-semibold"><i class="bi bi-image"></i> Capturar o subir imagen</span>
+              <div class="btn-group btn-group-sm" role="group" aria-label="Cambiar fuente">
+                <button id="tabUploadBtn" class="btn btn-outline-primary active" data-mode="upload" type="button">
+                  <i class="bi bi-upload"></i> Subir
+                </button>
+                <button id="tabCameraBtn" class="btn btn-outline-primary" data-mode="camera" type="button">
+                  <i class="bi bi-camera"></i> Cámara
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Modo Subir -->
+              <div id="uploadSection" class="mb-3">
+                <label for="fileInput" class="form-label">Selecciona una imagen del problema</label>
+                <input class="form-control" type="file" id="fileInput" accept="image/*">
+              </div>
+              <!-- Modo Cámara -->
+              <div id="cameraSection" class="mb-3 d-none">
+                <div class="ratio ratio-4x3 border rounded overflow-hidden">
+                  <video id="video" autoplay playsinline></video>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+                  <button id="startCameraBtn" class="btn btn-outline-secondary" type="button">
+                    <i class="bi bi-camera-video"></i> Iniciar
+                  </button>
+                  <button id="captureBtn" class="btn btn-primary" type="button" disabled>
+                    <i class="bi bi-camera-fill"></i> Capturar
+                  </button>
+                  <button id="stopCameraBtn" class="btn btn-outline-danger" type="button" disabled>
+                    <i class="bi bi-stop-circle"></i> Detener
+                  </button>
+                </div>
+              </div>
+              <!-- Vista previa de imagen -->
+              <div>
+                <label class="form-label">Vista previa</label>
+                <div class="border rounded p-2 text-center bg-light">
+                  <img id="preview" class="img-fluid" alt="Vista previa" />
+                  <canvas id="canvas" class="d-none"></canvas>
+                  <img id="processedPreview" class="img-fluid mt-2 d-none" alt="Vista previa procesada" />
+                </div>
+              </div>
+              <hr>
+              <!-- Opciones de OCR -->
+              <div class="row g-2 align-items-end mb-2">
+                <div class="col-6">
+                  <label for="ocrMode" class="form-label">Modo OCR</label>
+                  <select id="ocrMode" class="form-select form-select-sm">
+                    <option value="auto" selected>Auto (bloque)</option>
+                    <option value="line">Una línea</option>
+                    <option value="block">Bloque</option>
+                  </select>
+                </div>
+                <div class="col-6 form-check mt-4">
+                  <input class="form-check-input" type="checkbox" value="" id="enhanceToggle" checked>
+                  <label class="form-check-label" for="enhanceToggle">
+                    Mejora automática de imagen
+                  </label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <a class="link-primary small" data-bs-toggle="collapse" href="#ocrHelp" role="button" aria-expanded="false" aria-controls="ocrHelp">
+                  ¿Qué modo de OCR debo usar?
+                </a>
+                <div class="collapse mt-2" id="ocrHelp">
+                  <div class="alert alert-info small mb-0">
+                    <div class="fw-semibold mb-1">Guía rápida de modos OCR</div>
+                    <ul class="mb-2 ps-3">
+                      <li><strong>Auto (bloque)</strong>: detecta párrafos/regiones. Úsalo para fotos con varias líneas o ejercicios en bloque.</li>
+                      <li><strong>Bloque</strong>: similar a Auto pero más estricto en la segmentación; útil cuando hay mucho texto alrededor.</li>
+                      <li><strong>Una línea</strong>: asume una sola ecuación horizontal; reduce cortes y saltos de línea.</li>
+                    </ul>
+                    <div class="mb-0">
+                      Sugerencia: deja activa <strong>Mejora automática de imagen</strong> para binarizar y aumentar contraste antes del OCR.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Entrada manual alternativa -->
+              <div>
+                <label for="manualInput" class="form-label">O escribe la expresión/ecuación manualmente</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-pencil"></i></span>
+                  <input id="manualInput" type="text" class="form-control" placeholder="Ej: 2x + 3 = 9 o (2+3)^2">
+                </div>
+                <div class="form-text">Para sistemas, escribe una ecuación por línea o separa con ';' (ej: 2x+3y=7; x-y=1).</div>
+              </div>
+            </div>
+            <div class="card-footer d-grid gap-2 d-md-flex justify-content-md-end">
+              <button id="clearBtn" class="btn btn-outline-secondary" type="button">
+                <i class="bi bi-eraser"></i> Limpiar
+              </button>
+              <button id="solveBtn" class="btn btn-gradient" type="button"><i class="bi bi-lightning-charge"></i> Resolver</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel de resultados -->
+        <div class="col-12 col-lg-7">
+          <div id="resultsCard" class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="fw-semibold"><i class="bi bi-list-ol"></i> Resultado paso a paso</span>
+              <button id="exportPdfBtn" class="btn btn-sm btn-outline-secondary" type="button"><i class="bi bi-filetype-pdf"></i> Exportar PDF</button>
+            </div>
+            <div class="card-body">
+              <!-- Estado / Alertas -->
+              <div id="statusArea" class="mb-3"></div>
+
+              <!-- Texto reconocido (OCR) -->
+              <div class="mb-3">
+                <label class="form-label">Texto reconocido</label>
+                <pre id="ocrText" class="bg-body-tertiary border rounded p-2 small" style="white-space: pre-wrap"></pre>
+              </div>
+
+              <!-- Contenedor de pasos -->
+              <ul id="stepsList" class="list-group"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer mt-5">
+      <div class="container py-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <img src="assets/img/logo.svg" width="20" height="20" alt="Logo MathSnap">
+          <span class="small">© <span id="year"></span> MathSnap Solver</span>
+        </div>
+        <div class="small">By: <a href="https://ciscodedev.netlify.app/" target="_blank" rel="noopener">Ciscode</a></div>
+      </div>
+    </footer>
+
+    <!-- Modal de ayuda -->
+    <div class="modal fade" id="ayudaModal" tabindex="-1" aria-labelledby="ayudaLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ayudaLabel">Cómo usar</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <ol class="mb-0">
+              <li>Sube una foto nítida del problema o usa la cámara.</li>
+              <li>Verifica el texto reconocido y corrige en la entrada manual si es necesario.</li>
+              <li>Presiona "Resolver" para ver el paso a paso.</li>
+              <li>Funciona mejor con expresiones algebraicas simples, ecuaciones lineales o aritmética.</li>
+            </ol>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dependencias externas -->
+    <!-- Tesseract.js para OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <!-- Math.js para evaluación general -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@13/lib/browser/math.js"></script>
+    <!-- MathSteps para pasos algebraicos -->
+    <script src="https://cdn.jsdelivr.net/npm/mathsteps@0.4.0/dist/mathsteps.min.js"></script>
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- MathJax para LaTeX -->
+    <script>
+      // Configuración mínima para MathJax (TeX en línea y bloques)
+      window.MathJax = { tex: { inlineMath: [["$","$"],["\\(","\\)"]], displayMath: [["$$","$$"],["\\[","\\]"]] }, svg: { fontCache: 'global' } };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    <!-- html2pdf (html2canvas + jsPDF) para exportación a PDF -->
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+    <!-- Script de la aplicación -->
+    <script src="assets/js/app.js"></script>
+    <!-- JSON-LD (SEO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "MathSnap Solver",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "description": "Aplicación web que resuelve problemas matemáticos desde fotos o texto, mostrando pasos con LaTeX.",
+      "offers": {"@type": "Offer", "price": "0"}
+    }
+    </script>
+  </body>
+  </html>
+
+
