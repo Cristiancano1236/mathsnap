@@ -1,1 +1,10 @@
+# Ignorar reglas locales de Cursor
+.cursorrules
+
+# Archivos temporales comunes
+Thumbs.db
+*.log
+*.tmp
+*.DS_Store
+
 .cursorrules
